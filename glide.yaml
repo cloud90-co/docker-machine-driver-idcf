@@ -1,4 +1,4 @@
-package: github.com/atsaki/docker-machine-driver-cloudstack
+package: github.com/go/docker-machine-driver-idcf
 import:
   - package: github.com/docker/docker
     ref:     a8a31eff10544860d2188dddabdee4d727545796
@@ -7,7 +7,7 @@ import:
   - package: github.com/docker/machine
     ref:     a650a404fc3e006fea17b12615266168db79c776
   - package: github.com/xanzy/go-cloudstack
-    ref:     104168fa792713f5e04b76e2862779dc2ad85bcc
+    ref:     fc8ab599c1a9b707303676d54b7bb64221916c88
   - package: github.com/Azure/go-ansiterm
     ref:     70b2c90b260171e829f1ebd7c17f600c11858dbe
   - package: github.com/Sirupsen/logrus

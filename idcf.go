@@ -1,4 +1,4 @@
-package cloudstack
+package idcf
 
 import (
 	"encoding/base64"
@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	driverName = "cloudstack"
+	driverName = "idcf"
 	dockerPort = 2376
 	swarmPort  = 3376
 )
@@ -25,7 +25,7 @@ type configError struct {
 }
 
 func (e *configError) Error() string {
-	return fmt.Sprintf("cloudstack driver requires the --cloudstack-%s option", e.option)
+	return fmt.Sprintf("idcf driver requires the --idcf-%s option", e.option)
 }
 
 type Driver struct {
@@ -64,75 +64,75 @@ type Driver struct {
 func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 	return []mcnflag.Flag{
 		mcnflag.StringFlag{
-			Name:   "cloudstack-api-url",
-			Usage:  "CloudStack API URL",
-			EnvVar: "CLOUDSTACK_API_URL",
+			Name:   "idcf-api-url",
+			Usage:  "IDCF API URL",
+			EnvVar: "IDCF_API_URL",
 		},
 		mcnflag.StringFlag{
-			Name:   "cloudstack-api-key",
-			Usage:  "CloudStack API key",
-			EnvVar: "CLOUDSTACK_API_KEY",
+			Name:   "idcf-api-key",
+			Usage:  "IDCF API key",
+			EnvVar: "IDCF_API_KEY",
 		},
 		mcnflag.StringFlag{
-			Name:   "cloudstack-secret-key",
-			Usage:  "CloudStack API secret key",
-			EnvVar: "CLOUDSTACK_SECRET_KEY",
+			Name:   "idcf-secret-key",
+			Usage:  "IDCF API secret key",
+			EnvVar: "IDCF_SECRET_KEY",
 		},
 		mcnflag.BoolFlag{
-			Name:   "cloudstack-http-get-only",
-			Usage:  "Only use HTTP GET to execute CloudStack API",
-			EnvVar: "CLOUDSTACK_HTTP_GET_ONLY",
+			Name:   "idcf-http-get-only",
+			Usage:  "Only use HTTP GET to execute IDCF API",
+			EnvVar: "IDCF_HTTP_GET_ONLY",
 		},
 		mcnflag.IntFlag{
-			Name:   "cloudstack-timeout",
+			Name:   "idcf-timeout",
 			Usage:  "time(seconds) allowed to complete async job",
-			EnvVar: "CLOUDSTACK_TIMEOUT",
+			EnvVar: "IDCF_TIMEOUT",
 			Value:  300,
 		},
 		mcnflag.BoolFlag{
-			Name:  "cloudstack-use-private-address",
+			Name:  "idcf-use-private-address",
 			Usage: "Use a private IP to access the machine",
 		},
 		mcnflag.BoolFlag{
-			Name:  "cloudstack-use-port-forward",
+			Name:  "idcf-use-port-forward",
 			Usage: "Use port forwarding rule to access the machine",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-public-ip",
-			Usage: "CloudStack Public IP",
+			Name:  "idcf-public-ip",
+			Usage: "IDCF Public IP",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-ssh-user",
-			Usage: "CloudStack SSH user",
+			Name:  "idcf-ssh-user",
+			Usage: "IDCF SSH user",
 			Value: "root",
 		},
 		mcnflag.StringSliceFlag{
-			Name:  "cloudstack-cidr",
+			Name:  "idcf-cidr",
 			Usage: "Source CIDR to give access to the machine. default 0.0.0.0/0",
 		},
 		mcnflag.BoolFlag{
-			Name:  "cloudstack-expunge",
+			Name:  "idcf-expunge",
 			Usage: "Whether or not to expunge the machine upon removal",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-template",
-			Usage: "CloudStack template",
+			Name:  "idcf-template",
+			Usage: "IDCF template",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-service-offering",
-			Usage: "CloudStack service offering",
+			Name:  "idcf-service-offering",
+			Usage: "IDCF service offering",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-network",
-			Usage: "CloudStack network",
+			Name:  "idcf-network",
+			Usage: "IDCF network",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-zone",
-			Usage: "CloudStack zone",
+			Name:  "idcf-zone",
+			Usage: "IDCF zone",
 		},
 		mcnflag.StringFlag{
-			Name:  "cloudstack-userdata-file",
-			Usage: "CloudStack Userdata file",
+			Name:  "idcf-userdata-file",
+			Usage: "IDCF Userdata file",
 		},
 	}
 }
@@ -168,33 +168,33 @@ func (d *Driver) GetSSHUsername() string {
 // SetConfigFromFlags configures the driver with the object that was returned
 // by RegisterCreateFlags
 func (d *Driver) SetConfigFromFlags(flags drivers.DriverOptions) error {
-	d.ApiURL = flags.String("cloudstack-api-url")
-	d.ApiKey = flags.String("cloudstack-api-key")
-	d.SecretKey = flags.String("cloudstack-secret-key")
-	d.UsePrivateIP = flags.Bool("cloudstack-use-private-address")
-	d.UsePortForward = flags.Bool("cloudstack-use-port-forward")
-	d.HTTPGETOnly = flags.Bool("cloudstack-http-get-only")
-	d.JobTimeOut = int64(flags.Int("cloudstack-timeout"))
-	d.SSHUser = flags.String("cloudstack-ssh-user")
-	d.CIDRList = flags.StringSlice("cloudstack-cidr")
-	d.Expunge = flags.Bool("cloudstack-expunge")
+	d.ApiURL = flags.String("idcf-api-url")
+	d.ApiKey = flags.String("idcf-api-key")
+	d.SecretKey = flags.String("idcf-secret-key")
+	d.UsePrivateIP = flags.Bool("idcf-use-private-address")
+	d.UsePortForward = flags.Bool("idcf-use-port-forward")
+	d.HTTPGETOnly = flags.Bool("idcf-http-get-only")
+	d.JobTimeOut = int64(flags.Int("idcf-timeout"))
+	d.SSHUser = flags.String("idcf-ssh-user")
+	d.CIDRList = flags.StringSlice("idcf-cidr")
+	d.Expunge = flags.Bool("idcf-expunge")
 
-	if err := d.setZone(flags.String("cloudstack-zone")); err != nil {
+	if err := d.setZone(flags.String("idcf-zone")); err != nil {
 		return err
 	}
-	if err := d.setTemplate(flags.String("cloudstack-template")); err != nil {
+	if err := d.setTemplate(flags.String("idcf-template")); err != nil {
 		return err
 	}
-	if err := d.setServiceOffering(flags.String("cloudstack-service-offering")); err != nil {
+	if err := d.setServiceOffering(flags.String("idcf-service-offering")); err != nil {
 		return err
 	}
-	if err := d.setNetwork(flags.String("cloudstack-network")); err != nil {
+	if err := d.setNetwork(flags.String("idcf-network")); err != nil {
 		return err
 	}
-	if err := d.setPublicIP(flags.String("cloudstack-public-ip")); err != nil {
+	if err := d.setPublicIP(flags.String("idcf-public-ip")); err != nil {
 		return err
 	}
-	if err := d.setUserData(flags.String("cloudstack-userdata-file")); err != nil {
+	if err := d.setUserData(flags.String("idcf-userdata-file")); err != nil {
 		return err
 	}
 
@@ -336,7 +336,7 @@ func (d *Driver) Create() error {
 	}
 
 	// Create the machine
-	log.Info("Creating CloudStack instance...")
+	log.Info("Creating IDCF instance...")
 	vm, err := cs.VirtualMachine.DeployVirtualMachine(p)
 	if err != nil {
 		return err
@@ -388,7 +388,7 @@ func (d *Driver) Remove() error {
 		return err
 	}
 
-	log.Info("Removing CloudStack instance...")
+	log.Info("Removing IDCF instance...")
 	if _, err := cs.VirtualMachine.DestroyVirtualMachine(p); err != nil {
 		return err
 	}
@@ -525,9 +525,13 @@ func (d *Driver) setTemplate(template string) error {
 	}
 
 	cs := d.getClient()
-	templateid, err := cs.Template.GetTemplateID(d.Template, "executable", d.ZoneID)
+	templateid, counts, err := cs.Template.GetTemplateID(d.Template, "executable", d.ZoneID)
 	if err != nil {
 		return fmt.Errorf("Unable to get template id: %v", err)
+	}
+
+	if counts > 1 {
+		return fmt.Errorf("Unable to specify template id")
 	}
 
 	d.TemplateID = templateid
@@ -545,9 +549,13 @@ func (d *Driver) setServiceOffering(serviceoffering string) error {
 	}
 
 	cs := d.getClient()
-	serviceofferingid, err := cs.ServiceOffering.GetServiceOfferingID(d.ServiceOffering)
+	serviceofferingid, counts, err := cs.ServiceOffering.GetServiceOfferingID(d.ServiceOffering)
 	if err != nil {
 		return fmt.Errorf("Unable to get service offering id: %v", err)
+	}
+
+	if counts > 1 {
+		return fmt.Errorf("Unable to specify service offering id")
 	}
 
 	d.ServiceOfferingID = serviceofferingid
@@ -566,9 +574,13 @@ func (d *Driver) setNetwork(network string) error {
 	}
 
 	cs := d.getClient()
-	networkid, err := cs.Network.GetNetworkID(d.Network)
+	networkid, counts, err := cs.Network.GetNetworkID(d.Network)
 	if err != nil {
 		return fmt.Errorf("Unable to get network id: %v", err)
+	}
+
+	if counts > 1 {
+		return fmt.Errorf("Unable to specify network id")
 	}
 
 	d.NetworkID = networkid
